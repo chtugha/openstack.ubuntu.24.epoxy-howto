@@ -139,7 +139,7 @@ keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
 
 keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
 
-export controller=ubuntu-openstack.starface.local
+export controller=ubuntu-openstack.starfleet.local
 
 \# set any password for [adminpassword]
 keystone-manage bootstrap --bootstrap-password adminpassword \
@@ -205,3 +205,11 @@ export OS_AUTH_URL=https://ubuntu-openstack.starfleet.local:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 export PS1='\u@\h \W(keystone)\$ '
+
+chmod 600 ~/keystonerc
+
+source ~/keystonerc
+
+echo "source ~/keystonerc " >> ~/.bashrc
+
+openstack project create --domain default --description "Service Project" service --insecure
