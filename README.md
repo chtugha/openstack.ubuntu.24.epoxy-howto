@@ -26,3 +26,13 @@ character-set-server  = utf8mb4
 collation-server      = utf8mb4_general_ci
 
 systemctl restart mariadb
+
+mysql_secure_installation
+
+Switch to unix_socket authentication [Y/n] n
+Change the root password? [Y/n] n
+Remove anonymous users? [Y/n] y
+Disallow root login remotely? [Y/n] y
+Remove test database and access to it? [Y/n] y
+Reload privilege tables now? [Y/n] y
+
