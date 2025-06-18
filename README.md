@@ -217,3 +217,26 @@ source ~/keystonerc
 echo "source ~/keystonerc " >> ~/.bashrc
 
 openstack project create --domain default --description "Service Project" service
+
+openstack user create --domain default --project service --password servicepassword glance
+
+openstack role add --project service --user glance admin
+
+openstack service create --name glance --description "OpenStack Image service" image
+
+export controller=ubuntu-openstack.starfleet.local
+
+openstack endpoint create --region RegionOne image public https://$controller:9292
+
+openstack endpoint create --region RegionOne image internal https://$controller:9292
+
+openstack endpoint create --region RegionOne image admin https://$controller:9292
+
+mysql
+
+create database glance;
+grant all privileges on glance.* to glance@'localhost' identified by 'servicepassword';
+grant all privileges on glance.* to glance@'%' identified by 'servicepassword';
+exit
+
+apt -y install glance
