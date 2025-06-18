@@ -192,6 +192,10 @@ Listen 5000
 
 a2enmod ssl
 
+cp /etc/ssl/ubuntu-openstack/cert.pem /usr/local/share/ca-certificates/ubuntu-openstack.crt
+
+update-ca-certificates
+
 systemctl restart apache2
 
 nano ~/keystonerc
@@ -212,4 +216,4 @@ source ~/keystonerc
 
 echo "source ~/keystonerc " >> ~/.bashrc
 
-openstack project create --domain default --description "Service Project" service --insecure
+openstack project create --domain default --description "Service Project" service
