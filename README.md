@@ -189,4 +189,7 @@ Listen 5000
     SSLHonorCipherOrder on
     SSLCertificateFile /etc/ssl/ubuntu-openstack/cert.pem
     SSLCertificateKeyFile /etc/ssl/ubuntu-openstack/key.pem
-    SSLCertificateChainFile /etc/ssl/ubuntu-openstack/chain.pem
+
+a2enmod ssl
+
+systemctl restart apache2
