@@ -246,10 +246,10 @@ mv /etc/glance/glance-api.conf /etc/glance/glance-api.conf.org
 
 nano /etc/glance/glance-api.conf
 
-# create new
+\# create new
 [DEFAULT]
 bind_host = 127.0.0.1
-# RabbitMQ connection info
+\# RabbitMQ connection info
 transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local:5672
 enabled_backends = fs:file
 
@@ -260,10 +260,10 @@ default_backend = fs
 filesystem_store_datadir = /var/lib/glance/images/
 
 [database]
-# MariaDB connection info
+\# MariaDB connection info
 connection = mysql+pymysql://glance:servicepassword@ubuntu-openstack.starfleet.local:3306/glance
 
-# keystone auth info
+\# keystone auth info
 [keystone_authtoken]
 www_authenticate_uri = https://ubuntu-openstack.starfleet.local:5000
 auth_url = https://ubuntu-openstack.starfleet.local:5000
@@ -274,7 +274,7 @@ user_domain_name = Default
 project_name = service
 username = glance
 password = servicepassword
-# if using self-signed certs on Apache2 Keystone, turn to [true]
+\# if using self-signed certs on Apache2 Keystone, turn to [true]
 insecure = true 
 
 [paste_deploy]
@@ -289,4 +289,19 @@ chmod 640 /etc/glance/glance-api.conf
 chown root:glance /etc/glance/glance-api.conf
 su -s /bin/bash glance -c "glance-manage db_sync"
 systemctl restart glance-api
-systemctl enable glance-api        
+systemctl enable glance-api
+
+nano /etc/nginx/nginx.conf
+
+\# add to last line
+stream {
+    upstream glance-api {
+        server 127.0.0.1:9292;
+    }
+    server {
+        listen 192.168.200.165:9292 ssl;
+        proxy_pass glance-api;
+    }
+    ssl_certificate "/etc/ssl/ubuntu-openstack/cert.pem";
+    ssl_certificate_key "/etc/ssl/ubuntu-openstack/key.pem";
+}
