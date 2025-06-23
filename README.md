@@ -240,3 +240,52 @@ grant all privileges on glance.* to glance@'%' identified by 'servicepassword';
 exit
 
 apt -y install glance
+
+mv /etc/glance/glance-api.conf /etc/glance/glance-api.conf.org
+
+nano /etc/glance/glance-api.conf
+
+# create new
+ [DEFAULT]
+bind_host = 127.0.0.1
+# RabbitMQ connection info
+transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local:5672
+enabled_backends = fs:file
+
+[glance_store]
+default_backend = fs
+
+[fs]
+filesystem_store_datadir = /var/lib/glance/images/
+
+[database]
+# MariaDB connection info
+connection = mysql+pymysql://glance:servicepassword@ubuntu-openstack.starfleet.local:3306/glance
+
+# keystone auth info
+[keystone_authtoken]
+www_authenticate_uri = https://ubuntu-openstack.starfleet.local:5000
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+memcached_servers = ubuntu-openstack.starfleet.local:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = glance
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = true 
+
+[paste_deploy]
+flavor = keystone
+
+[oslo_policy]
+enforce_new_defaults = true
+
+
+
+chmod 640 /etc/glance/glance-api.conf
+chown root:glance /etc/glance/glance-api.conf
+su -s /bin/bash glance -c "glance-manage db_sync"
+systemctl restart glance-api
+systemctl enable glance-api        
