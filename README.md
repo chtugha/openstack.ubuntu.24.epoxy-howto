@@ -451,3 +451,42 @@ api_paste_config = /etc/nova/api-paste.ini
 
 [oslo_policy]
 enforce_new_defaults = true
+
+
+chmod 640 /etc/nova/nova.conf
+
+chgrp nova /etc/nova/nova.conf
+
+mv /etc/placement/placement.conf /etc/placement/placement.conf.org
+
+nano /etc/placement/placement.conf
+
+# create new
+[DEFAULT]
+debug = false
+
+[api]
+auth_strategy = keystone
+
+[keystone_authtoken]
+www_authenticate_uri = https://ubuntu-openstack.starfleet.local:5000
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+memcached_servers = ubuntu-openstack.starfleet.local:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = placement
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = true
+
+[placement_database]
+connection = mysql+pymysql://placement:password@ubuntu-openstack.starfleet.local:3306/placement
+
+
+
+nano /etc/apache2/sites-enabled/placement-api.conf
+
+# line 1 : change
+Listen 127.0.0.1:8778
