@@ -305,3 +305,6 @@ stream {
     ssl_certificate "/etc/ssl/ubuntu-openstack/cert.pem";
     ssl_certificate_key "/etc/ssl/ubuntu-openstack/key.pem";
 }
+
+
+systemctl restart nginx
