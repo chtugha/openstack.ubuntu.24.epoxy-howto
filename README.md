@@ -308,3 +308,74 @@ stream {
 
 
 systemctl restart nginx
+
+cd /opt
+
+wget http://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
+
+modprobe nbd
+
+qemu-nbd --connect=/dev/nbd0 ubuntu-24.04-server-cloudimg-amd64.img
+
+mount /dev/nbd0p1 /mnt
+
+nano /mnt/etc/cloud/cloud.cfg
+
+# line 13 : add
+disable_root: false
+ssh_pwauth: true
+
+# line 96 : change
+lock_passwd: False
+
+
+umount /mnt
+
+qemu-nbd --disconnect /dev/nbd0p1
+
+openstack image create "Ubuntu2404" --file ubuntu-24.04-server-cloudimg-amd64.img --disk-format qcow2 --container-format bare --public
+
+openstack image list
+
+openstack user create --domain default --project service --password servicepassword nova
+
+openstack role add --project service --user nova admin
+
+openstack user create --domain default --project service --password servicepassword placement
+
+openstack role add --project service --user placement admin
+
+openstack service create --name nova --description "OpenStack Compute service" compute
+
+openstack service create --name placement --description "OpenStack Compute Placement service" placement
+
+export controller=ubuntu-openstack.starfleet.local
+
+openstack endpoint create --region RegionOne compute public https://$controller:8774/v2.1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne compute internal https://$controller:8774/v2.1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne compute admin https://$controller:8774/v2.1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne placement public https://$controller:8778
+
+openstack endpoint create --region RegionOne placement internal https://$controller:8778
+
+openstack endpoint create --region RegionOne placement admin https://$controller:8778
+
+mysql
+
+create database nova;
+grant all privileges on nova.* to nova@'localhost' identified by 'password';
+grant all privileges on nova.* to nova@'%' identified by 'password';
+create database nova_api;
+grant all privileges on nova_api.* to nova@'localhost' identified by 'password';
+grant all privileges on nova_api.* to nova@'%' identified by 'password';
+create database placement;
+grant all privileges on placement.* to placement@'localhost' identified by 'password';
+grant all privileges on placement.* to placement@'%' identified by 'password';
+create database nova_cell0;
+grant all privileges on nova_cell0.* to nova@'localhost' identified by 'password';
+grant all privileges on nova_cell0.* to nova@'%' identified by 'password';
+exit
+
