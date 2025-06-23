@@ -379,3 +379,75 @@ grant all privileges on nova_cell0.* to nova@'localhost' identified by 'password
 grant all privileges on nova_cell0.* to nova@'%' identified by 'password';
 exit
 
+apt -y install nova-api nova-conductor nova-scheduler nova-novncproxy placement-api python3-novaclient
+
+mv /etc/nova/nova.conf /etc/nova/nova.conf.org
+
+nano /etc/nova/nova.conf
+
+# create new
+[DEFAULT]
+osapi_compute_listen = 127.0.0.1
+osapi_compute_listen_port = 8774
+metadata_listen = 127.0.0.1
+metadata_listen_port = 8775
+state_path = /var/lib/nova
+enabled_apis = osapi_compute,metadata
+log_dir = /var/log/nova
+# RabbitMQ connection info
+transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local:5672
+
+[api]
+auth_strategy = keystone
+
+[vnc]
+enabled = True
+novncproxy_host = 127.0.0.1
+novncproxy_port = 6080
+novncproxy_base_url = https://ubuntu-openstack.starfleet.local:6080/vnc_auto.html
+
+# Glance connection info
+[glance]
+api_servers = https://ubuntu-openstack.starfleet.local:9292
+
+[oslo_concurrency]
+lock_path = $state_path/tmp
+
+# MariaDB connection info
+[api_database]
+connection = mysql+pymysql://nova:password@ubuntu-openstack.starfleet.local:3306/nova_api
+
+[database]
+connection = mysql+pymysql://nova:password@ubuntu-openstack.starfleet.local:3306/nova
+
+# Keystone auth info
+[keystone_authtoken]
+www_authenticate_uri = https://ubuntu-openstack.starfleet.local:5000
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+memcached_servers = ubuntu-openstack.starfleet.local:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = nova
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = true
+
+[placement]
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+os_region_name = RegionOne
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = placement
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = true
+
+[wsgi]
+api_paste_config = /etc/nova/api-paste.ini
+
+[oslo_policy]
+enforce_new_defaults = true
