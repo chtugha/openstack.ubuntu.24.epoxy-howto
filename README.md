@@ -24,6 +24,7 @@ nano /etc/mysql/mariadb.conf.d/50-server.cnf
 \# if use 4 bytes UTF-8, specify [utf8mb4]
 character-set-server  = utf8mb4
 collation-server      = utf8mb4_general_ci
+bind-address          = 0.0.0.0
 
 systemctl restart mariadb
 
@@ -246,7 +247,7 @@ mv /etc/glance/glance-api.conf /etc/glance/glance-api.conf.org
 nano /etc/glance/glance-api.conf
 
 # create new
- [DEFAULT]
+[DEFAULT]
 bind_host = 127.0.0.1
 # RabbitMQ connection info
 transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local:5672
