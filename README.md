@@ -657,3 +657,129 @@ lock_path = $state_path/tmp
 enforce_new_defaults = true
 
 
+chmod 640 /etc/neutron/neutron.conf
+
+chgrp neutron /etc/neutron/neutron.conf
+
+mv /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugins/ml2/ml2_conf.ini.org
+
+nano /etc/neutron/plugins/ml2/ml2_conf.ini
+
+# create new
+[DEFAULT]
+debug = false
+
+[ml2]
+type_drivers = flat,geneve
+tenant_network_types = geneve
+mechanism_drivers = ovn
+extension_drivers = port_security
+overlay_ip_version = 4
+
+[ml2_type_geneve]
+vni_ranges = 1:65536
+max_header_size = 38
+
+[ml2_type_flat]
+flat_networks = *
+
+[securitygroup]
+enable_security_group = True
+firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+
+[ovn]
+ovn_nb_connection = tcp:192.168.200.165:6641
+ovn_sb_connection = tcp:192.168.200.165:6642
+ovn_l3_scheduler = leastloaded
+ovn_metadata_enabled = True
+
+
+chmod 640 /etc/neutron/plugins/ml2/ml2_conf.ini
+
+chgrp neutron /etc/neutron/plugins/ml2/ml2_conf.ini
+
+nano /etc/neutron/neutron_ovn_metadata_agent.ini
+
+[DEFAULT]
+# line 2 : add to specify Nova API host
+nova_metadata_host = ubuntu-openstack.starfleet.local
+nova_metadata_protocol = https
+# specify any secret key you like
+metadata_proxy_shared_secret = metadata_secret
+
+# line 272 : change
+[ovs]
+ovsdb_connection = tcp:127.0.0.1:6640
+
+# add to last line
+[agent]
+root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
+
+[ovn]
+ovn_sb_connection = tcp:192.168.200.165:6642
+
+
+nano /etc/default/openvswitch-switch
+
+# line 8 : uncomment and add like follows
+OVS_CTL_OPTS="--ovsdb-server-options='--remote=ptcp:6640:127.0.0.1'"
+
+
+nano /etc/nova/nova.conf
+
+# add follows into the [DEFAULT] section
+vif_plugging_is_fatal = True
+vif_plugging_timeout = 300
+
+# add follows to last line : Neutron auth info
+# the value of [metadata_proxy_shared_secret] is the same with the one in [metadata_agent.ini]
+[neutron]
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = servicepassword
+service_metadata_proxy = True
+metadata_proxy_shared_secret = metadata_secret
+insecure = true
+
+
+nano /etc/nginx/nginx.conf
+
+# add into the [stream] section
+upstream neutron-api {
+        server 127.0.0.1:9696;
+    }
+    server {
+        listen 192.168.200.165:9696 ssl;
+        proxy_pass neutron-api;
+    }
+
+
+systemctl restart openvswitch-switch
+
+ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
+
+su -s /bin/bash neutron -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head"
+
+systemctl restart ovn-central ovn-northd ovn-controller ovn-host
+
+ovn-nbctl set-connection ptcp:6641:192.168.200.165 -- set connection . inactivity_probe=60000
+
+ovn-sbctl set-connection ptcp:6642:192.168.200.165 -- set connection . inactivity_probe=60000
+
+ovs-vsctl set open . external-ids:ovn-remote=tcp:192.168.200.165:6642
+
+ovs-vsctl set open . external-ids:ovn-encap-type=geneve
+
+ovs-vsctl set open . external-ids:ovn-encap-ip=192.168.200.165
+
+ovs-vsctl set open . external-ids:ovn-cms-options=enable-chassis-as-gw
+
+systemctl restart neutron-server neutron-ovn-metadata-agent nova-api nova-compute nginx
+
+openstack network agent list
+
