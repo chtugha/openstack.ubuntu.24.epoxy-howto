@@ -490,3 +490,170 @@ nano /etc/apache2/sites-enabled/placement-api.conf
 
 # line 1 : change
 Listen 127.0.0.1:8778
+
+
+chmod 640 /etc/placement/placement.conf
+
+chgrp placement /etc/placement/placement.conf
+
+nano /etc/nginx/nginx.conf
+
+# change the [stream] section
+stream {
+    upstream glance-api {
+        server 127.0.0.1:9292;
+    }
+    server {
+        listen 192.168.200.165:9292 ssl;
+        proxy_pass glance-api;
+    }
+    upstream nova-api {
+        server 127.0.0.1:8774;
+    }
+    server {
+        listen 192.168.200.165:8774 ssl;
+        proxy_pass nova-api;
+    }
+    upstream nova-metadata-api {
+        server 127.0.0.1:8775;
+    }
+    server {
+        listen 192.168.200.165:8775 ssl;
+        proxy_pass nova-metadata-api;
+    }
+    upstream placement-api {
+        server 127.0.0.1:8778;
+    }
+    server {
+        listen 192.168.200.165:8778 ssl;
+        proxy_pass placement-api;
+    }
+    upstream novncproxy {
+        server 127.0.0.1:6080;
+    }
+    server {
+        listen 192.168.200.165:6080 ssl;
+        proxy_pass novncproxy;
+    }
+    ssl_certificate "/etc/ssl/ubuntu-openstack/cert.pem";
+    ssl_certificate_key "/etc/ssl/ubuntu-openstack/key.pem";
+}
+
+
+su -s /bin/bash placement -c "placement-manage db sync"
+
+su -s /bin/bash nova -c "nova-manage api_db sync"
+
+su -s /bin/bash nova -c "nova-manage cell_v2 map_cell0"
+
+su -s /bin/bash nova -c "nova-manage db sync"
+
+su -s /bin/bash nova -c "nova-manage cell_v2 create_cell --name cell1"
+
+systemctl restart nova-api nova-conductor nova-scheduler nova-novncproxy
+
+systemctl enable nova-api nova-conductor nova-scheduler nova-novncproxy
+
+systemctl restart apache2 nginx
+
+openstack compute service list
+
+apt -y install nova-compute nova-compute-kvm
+
+nano /etc/nova/nova.conf
+
+# add into the [vnc] section
+# IP address compute instances listen
+[vnc]
+enabled = True
+server_listen = 192.168.200.165
+server_proxyclient_address = 192.168.200.165
+novncproxy_host = 127.0.0.1
+novncproxy_port = 6080
+novncproxy_base_url = https://ubuntu-openstack.starfleet.local:6080/vnc_auto.html
+
+
+systemctl restart nova-compute
+
+su -s /bin/bash nova -c "nova-manage cell_v2 discover_hosts"
+
+openstack compute service list
+
+openstack user create --domain default --project service --password servicepassword neutron
+
+openstack role add --project service --user neutron admin
+
+openstack service create --name neutron --description "OpenStack Networking service" network
+
+export controller=ubuntu-openstack.starfleet.local
+
+openstack endpoint create --region RegionOne network public https://$controller:9696
+
+openstack endpoint create --region RegionOne network internal https://$controller:9696
+
+openstack endpoint create --region RegionOne network admin https://$controller:9696
+
+mysql
+
+create database neutron_ml2;
+grant all privileges on neutron_ml2.* to neutron@'localhost' identified by 'password';
+grant all privileges on neutron_ml2.* to neutron@'%' identified by 'password';
+exit
+
+
+apt -y install neutron-server neutron-plugin-ml2 neutron-ovn-metadata-agent python3-neutronclient ovn-central ovn-host openvswitch-switch
+
+mv /etc/neutron/neutron.conf /etc/neutron/neutron.conf.org
+
+nano /etc/neutron/neutron.conf
+
+# create new
+[DEFAULT]
+bind_host = 127.0.0.1
+bind_port = 9696
+core_plugin = ml2
+service_plugins = ovn-router
+auth_strategy = keystone
+state_path = /var/lib/neutron
+allow_overlapping_ips = True
+notify_nova_on_port_status_changes = True
+notify_nova_on_port_data_changes = True
+# RabbitMQ connection info
+transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local:5672
+
+# Keystone auth info
+[keystone_authtoken]
+www_authenticate_uri = https://ubuntu-openstack.starfleet.local:5000
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+memcached_servers = ubuntu-openstack.starfleet.local:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = neutron
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = true
+
+[database]
+connection = mysql+pymysql://neutron:password@ubuntu-openstack.starfleet.local:3306/neutron_ml2
+
+[nova]
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+region_name = RegionOne
+project_name = service
+username = nova
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = true
+
+[oslo_concurrency]
+lock_path = $state_path/tmp
+
+[oslo_policy]
+enforce_new_defaults = true
+
+
