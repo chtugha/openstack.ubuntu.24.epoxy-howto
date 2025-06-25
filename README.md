@@ -783,6 +783,15 @@ systemctl restart neutron-server neutron-ovn-metadata-agent nova-api nova-comput
 
 openstack network agent list
 
+nano /etc/systemd/network/dummy0.netdev
+
+[NetDev]
+Name=dummy0
+Kind=dummy
+
+
+systemctl restart systemd-networkd
+
 cp /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.org
 
 nano /etc/netplan/01-netcfg.yaml
@@ -794,11 +803,8 @@ network:
   ethernets:
     ens192: {}     # für br-mgmt (Management)
     ens224: {}     # für br-ex (VLAN-Trunk ohne IP)
-
-  dummy:
-    dummy0:
-      mtu: 1500
-
+    dummy0: {}
+    
   bonds:
     bond0:
       interfaces:
