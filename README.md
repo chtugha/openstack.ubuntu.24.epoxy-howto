@@ -783,3 +783,83 @@ systemctl restart neutron-server neutron-ovn-metadata-agent nova-api nova-comput
 
 openstack network agent list
 
+cp /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.org
+
+network:
+  version: 2
+  renderer: networkd
+
+  ethernets:
+    ens192: {}     # für br-mgmt (Management)
+    ens224: {}     # für br-ex (VLAN-Trunk ohne IP)
+
+  bonds:
+    bond0:
+      interfaces:
+        - ens224  # add more if you have more uplink LACP Ports
+      parameters:
+        mode: balance-slb
+      # by default the vlan is already untagged, no extra option needed here.
+      openvswitch: {}
+
+  bridges:
+    br-mgmt:
+      interfaces: [ens192]
+      addresses: [192.168.200.165/24]
+      gateway4: 192.168.200.1
+      mtu: 1500
+      nameservers:
+        addresses: [192.168.200.1]
+        search: [starfleet.local]
+      parameters:
+        stp: false
+        forward-delay: 0
+    br-ex:
+      interfaces:
+        - bond0
+      openvswitch: {}
+  vlans:
+    vlan2:
+      id: 2
+      link: br-ex
+      mtu: 1500
+      addresses: []
+      openvswitch: {}
+    vlan16:
+      id: 16
+      link: br-ex
+      mtu: 1500
+      addresses: []
+      openvswitch: {}
+    vlan17:
+      id: 17
+      link: br-ex
+      mtu: 1500
+      addresses: []
+      openvswitch: {}
+    vlan18:
+      id: 18
+      link: br-ex
+      mtu: 1500
+      addresses: []
+      openvswitch: {}
+    vlan19:
+      id: 19
+      link: br-ex
+      mtu: 1500
+      addresses: [192.168.3.5/24]
+      gateway4: 192.168.3.254
+      openvswitch: {}
+      dhcp4: false
+    vlan20:
+      id: 20
+      link: br-ex
+      mtu: 9000
+      addresses: []
+      openvswitch: {}
+    vlan22:
+      id: 22
+      link: br-ex
+      mtu: 9000
+      addresses: []
+      openvswitch: {}
