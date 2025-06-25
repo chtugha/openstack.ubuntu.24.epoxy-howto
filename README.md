@@ -785,6 +785,8 @@ openstack network agent list
 
 cp /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.org
 
+nano /etc/netplan/01-netcfg.yaml
+
 network:
   version: 2
   renderer: networkd
@@ -808,7 +810,8 @@ network:
       addresses: [192.168.200.165/24]
       routes:
         - to: default
-         via: 192.168.200.1
+          via: 192.168.200.1
+          metric: 100
       mtu: 1500
       nameservers:
         addresses: [192.168.200.1]
@@ -852,7 +855,8 @@ network:
       addresses: [192.168.19.123/24]
       routes:
         - to: default
-         via: 192.168.19.1
+          via: 192.168.19.1
+          metric: 101
       openvswitch: {}
       nameservers:
         addresses: [192.168.200.1]
