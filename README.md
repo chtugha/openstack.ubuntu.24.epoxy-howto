@@ -892,19 +892,26 @@ nano /etc/neutron/plugins/ml2/ml2_conf.ini
 # create new
 [DEFAULT]
 debug = false
+service_plugins = router
+allow_overlapping_ips = true
+transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local
 
 [ml2]
 type_drivers = flat,geneve,vlan
 tenant_network_types = vlan  
-mechanism_drivers = openvswitch
+mechanism_drivers = openvswitch,l2population
 extension_drivers = port_security
 overlay_ip_version = 4
 
 [ovs]
-bridge_mappings = physnet1:br-ex    
+#bridge_mappings = physnet1:br-ex    
 
 [ml2_type_vlan]
 network_vlan_ranges = physnet1:2:22               
+
+[ml2_type_vxlan]
+vni_ranges = 1001:2000
+# Optional: local_ip is defined in openvswitch_agent.ini
 
 [ml2_type_geneve]
 vni_ranges = 1:65536
@@ -928,7 +935,21 @@ nano /etc/neutron/plugins/ml2/openvswitch_agent.ini
 
 [ovs]
 integration_bridge = br-int
+tunnel_bridge = br-tun
 bridge_mappings = physnet1:br-ex
+
+[agent]
+tunnel_types = vxlan
+l2_population = true
+tunnel_bridge = br-tun
+tunneling_ip = 192.168.200.165 # z. B. Management-IP dieses Hosts
+
+
+apt-get install neutron-openvswitch-agent
+
+systemctl restart neutron-server
+
+
 
 
 
