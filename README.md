@@ -806,7 +806,9 @@ network:
     br-mgmt:
       interfaces: [ens192]
       addresses: [192.168.200.165/24]
-      gateway4: 192.168.200.1
+      routes:
+        - to: default
+         via: 192.168.200.1
       mtu: 1500
       nameservers:
         addresses: [192.168.200.1]
@@ -847,9 +849,14 @@ network:
       id: 19
       link: br-ex
       mtu: 1500
-      addresses: [192.168.3.5/24]
-      gateway4: 192.168.3.254
+      addresses: [192.168.19.123/24]
+      routes:
+        - to: default
+         via: 192.168.19.1
       openvswitch: {}
+      nameservers:
+        addresses: [192.168.200.1]
+        search: [outside]
       dhcp4: false
     vlan20:
       id: 20
