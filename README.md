@@ -795,10 +795,15 @@ network:
     ens192: {}     # für br-mgmt (Management)
     ens224: {}     # für br-ex (VLAN-Trunk ohne IP)
 
+  dummy:
+    dummy0:
+      mtu: 1500
+
   bonds:
     bond0:
       interfaces:
         - ens224  # add more if you have more uplink LACP Ports
+        - dummy0
       parameters:
         mode: balance-slb
       # by default the vlan is already untagged, no extra option needed here.
