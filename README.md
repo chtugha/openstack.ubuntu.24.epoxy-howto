@@ -885,3 +885,50 @@ network:
       mtu: 9000
       addresses: []
       openvswitch: {}
+
+
+nano /etc/neutron/plugins/ml2/ml2_conf.ini
+
+# create new
+[DEFAULT]
+debug = false
+
+[ml2]
+type_drivers = flat,geneve,vlan
+tenant_network_types = vlan  
+mechanism_drivers = openvswitch
+extension_drivers = port_security
+overlay_ip_version = 4
+
+[ovs]
+bridge_mappings = physnet1:br-ex    
+
+[ml2_type_vlan]
+network_vlan_ranges = physnet1:2:22               
+
+[ml2_type_geneve]
+vni_ranges = 1:65536
+max_header_size = 38
+
+[ml2_type_flat]
+flat_networks = *
+
+[securitygroup]
+enable_security_group = True
+firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+
+[ovn]
+ovn_nb_connection = tcp:192.168.200.165:6641
+ovn_sb_connection = tcp:192.168.200.165:6642
+ovn_l3_scheduler = leastloaded
+ovn_metadata_enabled = True
+
+
+nano /etc/neutron/plugins/ml2/openvswitch_agent.ini
+
+[ovs]
+integration_bridge = br-int
+bridge_mappings = physnet1:br-ex
+
+
+
