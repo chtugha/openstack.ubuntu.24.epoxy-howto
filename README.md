@@ -916,7 +916,8 @@ flat_networks = *
 
 [securitygroup]
 enable_security_group = True
-firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+#firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+firewall_driver = ovn
 
 [ovn]
 ovn_nb_connection = tcp:192.168.200.165:6641
