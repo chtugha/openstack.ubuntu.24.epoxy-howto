@@ -601,7 +601,7 @@ grant all privileges on neutron_ml2.* to neutron@'%' identified by 'password';
 exit
 
 
-apt -y install neutron-server neutron-plugin-ml2 neutron-ovn-metadata-agent python3-neutronclient ovn-central ovn-host openvswitch-switch
+apt -y install neutron-server neutron-plugin-ml2 neutron-ovn-metadata-agent python3-neutronclient ovn-central ovn-host
 
 mv /etc/neutron/neutron.conf /etc/neutron/neutron.conf.org
 
