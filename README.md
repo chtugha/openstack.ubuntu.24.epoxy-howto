@@ -759,7 +759,6 @@ upstream neutron-api {
     }
 
 
-systemctl restart openvswitch-switch
 
 ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
 
@@ -813,7 +812,6 @@ network:
       parameters:
         mode: balance-slb
       # by default the vlan is already untagged, no extra option needed here.
-      openvswitch: {}
 
   bridges:
     br-mgmt:
@@ -830,35 +828,31 @@ network:
       parameters:
         stp: false
         forward-delay: 0
+      dhcp6: false
     br-ex:
       interfaces:
         - bond0
-      openvswitch: {}
   vlans:
     vlan2:
       id: 2
       link: br-ex
       mtu: 1500
       addresses: []
-      openvswitch: {}
     vlan16:
       id: 16
       link: br-ex
       mtu: 1500
       addresses: []
-      openvswitch: {}
     vlan17:
       id: 17
       link: br-ex
       mtu: 1500
       addresses: []
-      openvswitch: {}
     vlan18:
       id: 18
       link: br-ex
       mtu: 1500
       addresses: []
-      openvswitch: {}
     vlan19:
       id: 19
       link: br-ex
@@ -873,18 +867,17 @@ network:
         addresses: [192.168.200.1]
         search: [outside]
       dhcp4: false
+      dhcp6: false
     vlan20:
       id: 20
       link: br-ex
       mtu: 9000
       addresses: []
-      openvswitch: {}
     vlan22:
       id: 22
       link: br-ex
       mtu: 9000
       addresses: []
-      openvswitch: {}
 
 
 nano /etc/neutron/plugins/ml2/ml2_conf.ini
