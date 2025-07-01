@@ -939,6 +939,15 @@ openstack network create --provider-network-type vlan --provider-physical-networ
 
 openstack subnet create --network public-vlan19 --subnet-range 192.168.19.0/24 --gateway 192.168.19.1 public-subnet19
 
+openstack user create --domain default --project service --password servicepassword cinder
+
+openstack role add --project service --user cinder admin
+
+openstack role add --project service --user cinder service
+
+openstack role add --project service --user nova service
+
+openstack service create --name cinderv3 --description "OpenStack Block Storage" volumev3
 
 
 
