@@ -1109,23 +1109,29 @@ nano /etc/openstack-dashboard/local_settings.py
 # line 99 : change Memcache server
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
         'LOCATION': '127.0.0.1:11211',
     },
 }
 
 # line 113 : add
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 # line 126 : set Openstack Host
 # line 127 : comment out and add a line to specify URL of Keystone Host
 OPENSTACK_HOST = "ubuntu-openstack.starfleet.local"
 #OPENSTACK_KEYSTONE_URL = "http://%s/identity/v3" % OPENSTACK_HOST"
 OPENSTACK_KEYSTONE_URL = "https://ubuntu-openstack.starfleet.local:5000/v3"
 # line 131 : set your timezone
-TIME_ZONE = "Europe/Berlin"
+#TIME_ZONE = "Europe/Berlin"
 # add to the end
 OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
+OPENSTACK_API_VERSIONS = {
+    "identity": 3,
+    "image": 2,
+    "volume": 3,
+}
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "user"
 
 nano /etc/apache2/sites-available/default-ssl.conf
 # line 32,33 : change to your certificate
@@ -1140,3 +1146,5 @@ a2enmod ssl
 a2ensite default-ssl
 
 systemctl restart apache2 nova-api
+
+Loginto Horizon via https://ubuntu-openstack.starfleet.local/horizon  admin:*****
