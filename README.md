@@ -891,20 +891,20 @@ allow_overlapping_ips = true
 transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local
 
 [ml2]
-type_drivers = flat,geneve,vlan
-tenant_network_types = vlan  
-mechanism_drivers = openvswitch,l2population
+type_drivers = local,flat,geneve,vlan
+tenant_network_types = geneve,vlan  
+mechanism_drivers = ovn
 extension_drivers = port_security
 overlay_ip_version = 4
 
-[ovs]
+#[ovs]
 #bridge_mappings = physnet1:br-ex    
 
 [ml2_type_vlan]
 network_vlan_ranges = physnet1:2:22               
 
-[ml2_type_vxlan]
-vni_ranges = 1001:2000
+#[ml2_type_vxlan]
+#vni_ranges = 1001:2000
 # Optional: local_ip is defined in openvswitch_agent.ini
 
 [ml2_type_geneve]
