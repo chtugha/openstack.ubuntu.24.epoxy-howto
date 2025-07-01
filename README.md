@@ -1110,7 +1110,7 @@ nano /etc/openstack-dashboard/local_settings.py
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '192.168.200.165:11211',
+        'LOCATION': '127.0.0.1:11211',
     },
 }
 
