@@ -1017,6 +1017,32 @@ lock_path = $state_path/tmp
 [oslo_policy]
 enforce_new_defaults = true
 
+[enabled_backends]
+#add name of iscsi connection after lvm: lvm,synology
+enabled_backends = synology
+
+#[lvm]
+#target_helper = lioadm
+#target_protocol = iscsi
+#target_ip_address = $my_ip
+# volume group name created on [1]
+#volume_group = vg_volume01
+#volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+#volumes_dir = $state_path/volumes
+
+[synology]
+volume_driver=cinder.volume.drivers.synology.synology_iscsi.SynoISCSIDriver
+volume_backend_name=synology   
+target_protocol=iscsi
+target_ip_address=192.168.10.11
+synology_admin_port=5000
+synology_username=Administrator
+synology_password=*****
+synology_pool_name = volume1
+
+
+
+
 
 chmod 640 /etc/cinder/cinder.conf
 
@@ -1039,3 +1065,17 @@ nano /etc/nginx/nginx.conf
         proxy_pass cinder-api;
     }
 
+
+su -s /bin/bash cinder -c "cinder-manage db sync"
+
+systemctl restart cinder-scheduler apache2 nginx
+
+systemctl enable cinder-scheduler
+
+echo "export OS_VOLUME_API_VERSION=3" >> ~/keystonerc
+
+source ~/keystonerc
+
+apt -y install cinder-volume python3-mysqldb targetcli-fb python3-rtslib-fb
+
+systemctl enable cinder-volume
