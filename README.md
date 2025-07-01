@@ -1100,3 +1100,37 @@ insecure = false
 
 [cinder]
 os_region_name = RegionOne
+
+
+apt -y install openstack-dashboard
+
+nano /etc/openstack-dashboard/local_settings.py
+
+# line 99 : change Memcache server
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '192.168.200.165:11211',
+    },
+}
+
+# line 113 : add
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# line 126 : set Openstack Host
+# line 127 : comment out and add a line to specify URL of Keystone Host
+OPENSTACK_HOST = "ubuntu-openstack.starfleet.local"
+#OPENSTACK_KEYSTONE_URL = "http://%s/identity/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_URL = "https://ubuntu-openstack.starfleet.local:5000/v3"
+# line 131 : set your timezone
+TIME_ZONE = "Europe/Berlin"
+# add to the end
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
+
+nano /etc/apache2/sites-available/default-ssl.conf
+# line 32,33 : change to your certificate
+SSLCertificateFile      /etc/ssl/ubuntu-openstack/cert.pem
+SSLCertificateKeyFile   /etc/ssl/ubuntu-openstack/key.pem
+
+# line 42 : uncomment and specify your chain file
+SSLCertificateChainFile /etc/ssl/ubuntu-openstack/cert.pem
