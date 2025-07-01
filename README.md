@@ -1009,7 +1009,7 @@ project_name = service
 username = cinder
 password = servicepassword
 # if using self-signed certs on Apache2 Keystone, turn to [true]
-insecure = false
+insecure = true
 
 [oslo_concurrency]
 lock_path = $state_path/tmp
