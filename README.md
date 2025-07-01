@@ -1134,3 +1134,9 @@ SSLCertificateKeyFile   /etc/ssl/ubuntu-openstack/key.pem
 
 # line 42 : uncomment and specify your chain file
 SSLCertificateChainFile /etc/ssl/ubuntu-openstack/cert.pem
+
+a2enmod ssl
+
+a2ensite default-ssl
+
+systemctl restart apache2 nova-api
