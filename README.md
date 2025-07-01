@@ -829,6 +829,7 @@ network:
         stp: false
         forward-delay: 0
       dhcp6: false
+      dhcp4: false
     br-ex:
       interfaces:
         - bond0
