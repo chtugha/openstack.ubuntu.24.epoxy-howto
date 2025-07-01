@@ -933,6 +933,13 @@ systemctl restart neutron-server ovn-controller
 
 ovs-vsctl set open . external_ids:ovn-bridge-mappings=physnet1:br-ex
 
+ovs-vsctl set port bond0 trunks=2-22
+
+openstack network create --provider-network-type vlan --provider-physical-network physnet1 --provider-segment 19 public-vlan19
+
+openstack subnet create --network public-vlan19 --subnet-range 192.168.19.0/24 --gateway 192.168.19.1 public-subnet19
+
+
 
 
 
