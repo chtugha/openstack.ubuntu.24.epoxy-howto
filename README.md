@@ -949,6 +949,27 @@ openstack role add --project service --user nova service
 
 openstack service create --name cinderv3 --description "OpenStack Block Storage" volumev3
 
+export controller=ubuntu-openstack.starfleet.local
+
+openstack endpoint create --region RegionOne volumev3 public https://$controller:8776/v3/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne volumev3 internal https://$controller:8776/v3/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne volumev3 admin https://$controller:8776/v3/%\(tenant_id\)s
+
+mysql
+
+create database cinder;
+grant all privileges on cinder.* to cinder@'localhost' identified by 'password';
+grant all privileges on cinder.* to cinder@'%' identified by 'password';
+exit
+
+apt -y install cinder-api cinder-scheduler python3-cinderclient
+
+mv /etc/cinder/cinder.conf /etc/cinder/cinder.conf.org
+
+nano /etc/cinder/cinder.conf
+
 
 
 
