@@ -1119,7 +1119,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # line 126 : set Openstack Host
 # line 127 : comment out and add a line to specify URL of Keystone Host
 OPENSTACK_HOST = "ubuntu-openstack.starfleet.local"
-#OPENSTACK_KEYSTONE_URL = "http://%s/identity/v3" % OPENSTACK_HOST
+#OPENSTACK_KEYSTONE_URL = "http://%s/identity/v3" % OPENSTACK_HOST"
 OPENSTACK_KEYSTONE_URL = "https://ubuntu-openstack.starfleet.local:5000/v3"
 # line 131 : set your timezone
 TIME_ZONE = "Europe/Berlin"
