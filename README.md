@@ -926,23 +926,12 @@ ovn_l3_scheduler = leastloaded
 ovn_metadata_enabled = True
 
 
-nano /etc/neutron/plugins/ml2/openvswitch_agent.ini
 
-[ovs]
-integration_bridge = br-int
-tunnel_bridge = br-tun
-bridge_mappings = physnet1:br-ex
+mv /etc/neutron/plugins/ml2/openvswitch_agent.ini /etc/neutron/plugins/ml2/openvswitch_agent.ini.org
 
-[agent]
-tunnel_types = vxlan
-l2_population = true
-tunnel_bridge = br-tun
-tunneling_ip = 192.168.200.165 # z. B. Management-IP dieses Hosts
+systemctl restart neutron-server ovn-controller
 
-
-apt-get install neutron-openvswitch-agent
-
-systemctl restart neutron-server
+ovs-vsctl set open . external_ids:ovn-bridge-mappings=physnet1:br-ex
 
 
 
