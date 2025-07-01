@@ -1028,4 +1028,14 @@ nano /etc/apache2/conf-available/cinder-wsgi.conf
 Listen 127.0.0.1:8776
 
 
+nano /etc/nginx/nginx.conf
+
+# add under stream:
+    upstream cinder-api {
+        server 127.0.0.1:8776;
+    }
+    server {
+        listen 192.168.200.165:8776 ssl;
+        proxy_pass cinder-api;
+    }
 
