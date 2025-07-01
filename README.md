@@ -1031,16 +1031,14 @@ enabled_backends = synology
 #volumes_dir = $state_path/volumes
 
 [synology]
-volume_driver=cinder.volume.drivers.synology.synology_iscsi.SynoISCSIDriver
-volume_backend_name=synology   
-target_protocol=iscsi
-target_ip_address=192.168.10.11
-synology_admin_port=5000
-synology_username=Administrator
-synology_password=*****
-synology_pool_name = volume1
-
-
+volume_driver = cinder.volume.drivers.synology.synology_iscsi.SynoISCSIDriver
+target_protocol = iscsi
+target_ip_address = 192.168.19.38
+synology_admin_port = 5001
+synology_username = Administrator
+synology_password = L1l******
+synology_pool_name = Volume 1
+driver_use_ssl = True
 
 
 
