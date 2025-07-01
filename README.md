@@ -970,7 +970,52 @@ mv /etc/cinder/cinder.conf /etc/cinder/cinder.conf.org
 
 nano /etc/cinder/cinder.conf
 
+# create new
+[DEFAULT]
+rootwrap_config = /etc/cinder/rootwrap.conf
+api_paste_confg = /etc/cinder/api-paste.ini
+state_path = /var/lib/cinder
+auth_strategy = keystone
+# RabbitMQ connection info
+transport_url = rabbit://openstack:password@ubuntu-openstack.starfleet.local:5672
+enable_v3_api = True
 
+# MariaDB connection info
+[database]
+connection = mysql+pymysql://cinder:password@ubuntu-openstack.starfleet.local:3306/cinder
+
+# Keystone auth info
+[service_user]
+send_service_user_token = true
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = cinder
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = true
+
+# Keystone auth info
+[keystone_authtoken]
+www_authenticate_uri = https://ubuntu-openstack.starfleet.local:5000
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+memcached_servers = ubuntu-openstack.starfleet.local:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = cinder
+password = servicepassword
+# if using self-signed certs on Apache2 Keystone, turn to [true]
+insecure = false
+
+[oslo_concurrency]
+lock_path = $state_path/tmp
+
+[oslo_policy]
+enforce_new_defaults = true
 
 
 
