@@ -1018,4 +1018,14 @@ lock_path = $state_path/tmp
 enforce_new_defaults = true
 
 
+chmod 640 /etc/cinder/cinder.conf
+
+chgrp cinder /etc/cinder/cinder.conf
+
+nano /etc/apache2/conf-available/cinder-wsgi.conf
+
+# line 1 : change
+Listen 127.0.0.1:8776
+
+
 
