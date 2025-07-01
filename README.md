@@ -1145,4 +1145,4 @@ a2ensite default-ssl
 
 systemctl restart apache2 nova-api
 
-Loginto Horizon via https://ubuntu-openstack.starfleet.local/horizon  admin:*****
+Log into Horizon via https://ubuntu-openstack.starfleet.local/horizon  admin:*****
