@@ -1096,7 +1096,7 @@ user_domain_name = Default
 project_name = service
 username = nova
 password = servicepassword
-insecure = false
+insecure = true
 
 [cinder]
 os_region_name = RegionOne
