@@ -1079,3 +1079,24 @@ source ~/keystonerc
 apt -y install cinder-volume python3-mysqldb targetcli-fb python3-rtslib-fb
 
 systemctl enable cinder-volume
+
+nano /etc/nova/nova.conf
+
+# add follows into the [keystone_authtoken] section
+service_token_roles = service
+service_token_roles_required = true
+
+# add to last line
+[service_user]
+send_service_user_token = true
+auth_url = https://ubuntu-openstack.starfleet.local:5000
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = nova
+password = servicepassword
+insecure = false
+
+[cinder]
+os_region_name = RegionOne
