@@ -1037,9 +1037,9 @@ target_ip_address = 192.168.19.38
 synology_admin_port = 5001
 synology_username = Administrator
 synology_password = L1l******
-synology_pool_name = Volume 1
+synology_pool_name = volume1
 driver_use_ssl = True
-
+synology_ssl_verify = False
 
 
 chmod 640 /etc/cinder/cinder.conf
