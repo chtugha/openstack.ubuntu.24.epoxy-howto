@@ -788,6 +788,17 @@ nano /etc/systemd/network/dummy0.netdev
 Name=dummy0
 Kind=dummy
 
+nano /etc/systemd/network/dummy1.netdev
+
+[NetDev]
+Name=dummy1
+Kind=dummy
+
+nano /etc/systemd/network/dummy2.netdev
+
+[NetDev]
+Name=dummy2
+Kind=dummy
 
 systemctl restart systemd-networkd
 
@@ -800,9 +811,11 @@ network:
   renderer: networkd
 
   ethernets:
-    ens192: {}     # für br-mgmt (Management)
-    ens224: {}     # für br-ex (VLAN-Trunk ohne IP)
-    dummy0: {}
+    ens192: {}     # for br-mgmt (Management)
+    ens224: {}     # for br-ex (VLAN-Trunk ohne IP)
+    dummy0: {}     # placeholder to create bonds as underlaying physical network interfaces - so that you can easily add physical interfaces to the bonds if needed
+    dummy1: {}     # placeholder to create bonds as underlaying physical network interfaces
+    dummy2: {}     # placeholder to create bonds as underlaying physical network interfaces
     
   bonds:
     bond0:
