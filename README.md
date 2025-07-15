@@ -825,10 +825,16 @@ network:
       parameters:
         mode: balance-slb
       # by default the vlan is already untagged, no extra option needed here.
+    bond1:
+      interfaces:
+        - ens192
+        - dummy1
+      parameters:
+        mode: balance-slb
 
   bridges:
     br-mgmt:
-      interfaces: [ens192]
+      interfaces: [bond1]
       addresses: [192.168.200.165/24]
       routes:
         - to: default
