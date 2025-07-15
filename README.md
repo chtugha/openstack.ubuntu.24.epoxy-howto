@@ -813,9 +813,9 @@ network:
   ethernets:
     ens192: {}     # for br-mgmt (Management)
     ens224: {}     # for br-ex (VLAN-Trunk ohne IP)
-    dummy0: {}     # placeholder to create bonds as underlaying physical network interfaces - so that you can easily add physical interfaces to the bonds if needed
-    dummy1: {}     # placeholder to create bonds as underlaying physical network interfaces
-    dummy2: {}     # placeholder to create bonds as underlaying physical network interfaces
+    dummy0: {}     # placeholder to create bond as underlaying physical network interfaces
+    dummy1: {}     # placeholder to create bond as underlaying physical network interfaces
+    dummy2: {}     # placeholder to create bond as underlaying physical network interfaces
     
   bonds:
     bond0:
