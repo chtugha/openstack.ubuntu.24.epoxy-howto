@@ -823,14 +823,14 @@ network:
         - ens224  # add more if you have more uplink LACP Ports
         - dummy0
       parameters:
-        mode: balance-slb
+        mode: active-backup
       # by default the vlan is already untagged, no extra option needed here.
     bond1:
       interfaces:
         - ens192
         - dummy1
       parameters:
-        mode: balance-slb
+        mode: active-backup
 
   bridges:
     br-mgmt:
