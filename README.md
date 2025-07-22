@@ -101,6 +101,10 @@ nano /etc/sysctl.d/99-disable-ipv6.conf
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
+net.ipv6.conf.br-ex.disable_ipv6 = 1
+net.ipv6.conf.br-mgmt.disable_ipv6 = 1
+net.ipv6.conf.bond0.disable_ipv6 = 1
+net.ipv6.conf.bond1.disable_ipv6 = 1
 
 sysctl -p
 
